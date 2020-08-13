@@ -4,7 +4,7 @@ CREATE TABLE user_mapping_with_sne (
     id INT AUTO_INCREMENT  PRIMARY KEY,
     userId VARCHAR(250) NOT NULL,
     account VARCHAR(250) NOT NULL,
-    functionID INT NOT NULL,
+    function INT NOT NULL,
     zoomEndpoint VARCHAR(250) NOT NULL,
     zoomVerificationCode VARCHAR(250) NOT NULL
 )
