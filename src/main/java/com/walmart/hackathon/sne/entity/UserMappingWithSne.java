@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@Setter
 public class UserMappingWithSne {
     @Id
     @GeneratedValue
@@ -17,6 +18,10 @@ public class UserMappingWithSne {
     private String function;
     private String zoomEndpoint;
     private String zoomVerificationToken;
+    // cosmos
+    // appinsight
+    // subscription
+    // resource groups
 
     public UserMappingWithSne(){
 

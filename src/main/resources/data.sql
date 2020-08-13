@@ -5,8 +5,8 @@ CREATE TABLE user_mapping_with_sne (
     userId VARCHAR(250) NOT NULL,
     account VARCHAR(250) NOT NULL,
     function INT NOT NULL,
-    zoomEndpoint VARCHAR(250) NOT NULL,
-    zoomVerificationCode VARCHAR(250) NOT NULL
+    zoomEndpoint VARCHAR(250),
+    zoomVerificationCode VARCHAR(250)
 )
 
 DROP TABLE IF EXISTS functions;

@@ -1,6 +1,7 @@
 package com.walmart.hackathon.sne.controller;
 
 import com.azure.core.annotation.*;
+import com.walmart.hackathon.sne.entity.*;
 import com.walmart.hackathon.sne.model.*;
 import com.walmart.hackathon.sne.service.*;
 import org.springframework.beans.factory.annotation.*;
@@ -10,6 +11,11 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/sne")
+
+// TO-DO - Explore pull data through SDK's
+// TO-DO - Rest call  to functions whenever there is alerts
+// TO-DO - SNE to Zoom call whenever there is an alert
+// TO-DO - Write Alerts and logic apps and functions in Azure
 public class SNEController {
 
     @Autowired
@@ -17,7 +23,7 @@ public class SNEController {
 
     // Register endpoint
     @PostMapping("/register")
-    private String registerSNE(@RequestBody RegistrationRequest registrationRequest) {
+    private String registerSNE(@RequestBody UserMappingWithSne registrationRequest) {
 
         // Request should contain
         // user

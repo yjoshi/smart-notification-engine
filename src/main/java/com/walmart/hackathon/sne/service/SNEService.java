@@ -1,6 +1,9 @@
 package com.walmart.hackathon.sne.service;
 
+import com.walmart.hackathon.sne.entity.*;
 import com.walmart.hackathon.sne.model.*;
+import com.walmart.hackathon.sne.repository.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
 import java.time.*;
@@ -10,9 +13,12 @@ import java.util.*;
 @Service
 public class SNEService {
 
-    public boolean register(RegistrationRequest registrationRequest) {
+    @Autowired
+    UserMappingWithSneRepository userMappingWithSneRepository;
+    public boolean register(UserMappingWithSne registrationRequest) {
 
         // Integrate with H2.
+        userMappingWithSneRepository.save(registrationRequest);
         return false;
     }
 
