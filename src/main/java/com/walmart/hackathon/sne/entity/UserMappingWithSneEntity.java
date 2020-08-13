@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-public class UserMappingWithSne {
+public class UserMappingWithSneEntity {
     @Id
     @GeneratedValue
     private int id;
@@ -18,16 +18,17 @@ public class UserMappingWithSne {
     private String function;
     private String zoomEndpoint;
     private String zoomVerificationToken;
-    // cosmos
-    // appinsight
-    // subscription
-    // resource groups
+    private String cosmosDbName;
+    private String appInsightName;
+    private String subscription;
+    private String groupName;
+    private String cloudSvc;
 
-    public UserMappingWithSne(){
+    public UserMappingWithSneEntity(){
 
     }
 
-    public UserMappingWithSne(int id, String userId, String account, String function, String zoomEndpoint, String zoomVerificationToken) {
+    public UserMappingWithSneEntity(int id, String userId, String account, String function, String zoomEndpoint, String zoomVerificationToken) {
 
     }
 }

@@ -4,6 +4,7 @@ import com.azure.core.annotation.*;
 import com.walmart.hackathon.sne.entity.*;
 import com.walmart.hackathon.sne.model.*;
 import com.walmart.hackathon.sne.service.*;
+import com.walmart.hackathon.sne.util.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,23 +39,24 @@ public class SNEController {
         }
 
     }
-    // Endpoint to RU
-    @GetMapping("/ru")
-    private Integer getRU(@RequestParam(required = true) String userId,@RequestParam(required = true)  String account) {
-        sneService.getRU(userId, account);
-        return 0;
+
+    @GetMapping("/userId/{userId}/type/{type}")
+    private SNEResponse getCloudDetails(@PathVariable String userId, @PathVariable String type, @QueryParam("startDate") Date start, @QueryParam("startDate") Date end) {
+        SNEResponse sneResponse = new SNEResponse();
+        switch (type) {
+            case ApplicationConstants.RU:
+                sneResponse = sneService.getRU(userId);
+                break;
+            case ApplicationConstants.AI:
+                sneResponse = sneService.getAppInsight(userId);
+                break;
+            case ApplicationConstants.COST:
+                sneResponse = sneService.getCost(userId, start, end);
+                break;
+            default:
+                System.out.println("Error");
+        }
+        return sneResponse;
     }
 
-
-    // Endpoint to get Appinsight logs
-    @GetMapping("/appInsight")
-    private AppInsight getAppInsights(@RequestParam(required = true) String userId,@RequestParam(required = true)  String account) {
-        return sneService.getAppInsight(userId, account);
-    }
-    // Endpoint to get cost details
-    @GetMapping("/cost")
-    private Double getCostDetails(@RequestParam(required = true) String userId,@RequestParam(required = true)  String account,
-            @QueryParam("startDate") Date start, @QueryParam("startDate") Date end) {
-        return sneService.getCost(userId, account, start, end);
-    }
 }
