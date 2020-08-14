@@ -6,12 +6,6 @@ tools:
   sonarscanner:
     - 3.0.3.778
 
-triggers:
-  - manual:
-      name: Release Image
-      call: release
-
-
 envs:
   global:
     variables:
