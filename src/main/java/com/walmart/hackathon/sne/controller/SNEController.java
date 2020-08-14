@@ -1,6 +1,7 @@
 package com.walmart.hackathon.sne.controller;
 
 import com.azure.core.annotation.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.walmart.hackathon.sne.entity.*;
 import com.walmart.hackathon.sne.model.*;
 import com.walmart.hackathon.sne.service.*;
@@ -59,4 +60,9 @@ public class SNEController {
         return sneResponse;
     }
 
+    @PostMapping("/notify")
+    public void notify (Object node) {
+        System.out.println(node);
+        sneService.callZoomService("asd");
+    }
 }
