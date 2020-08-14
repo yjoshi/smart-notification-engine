@@ -42,7 +42,6 @@ flows:
             dockerfile: 'Dockerfile'
             creds:
               apfsregistrydev.azurecr.io: '${devAcrCred}'
-              apfsregistryrelease.azurecr.io: '${releaseAcrCred}'
 
   build_img_dev:
     - shell: echo "build_img_dev"
@@ -71,30 +70,11 @@ flows:
           - call: runsonar
     finally:
       - call: hygieiaPublish
-  Build--Release-Proximity:
-    try:
-      - dir(sourcecode):
-          - call: readpom
-          - mvn -U versions:display-property-updates versions:update-properties versions:commit -Dmessage='updating the dependencies' scm:checkin
-          - mvn --batch-mode -Darguments='-Dcodecoveragelimit=0.70' release:prepare release:perform -DscmCommentPrefix='INTARS ' -Dcodecoveragelimit=0.70 -Dgoals=jacoco:prepare-agent,deploy
-          - call: runsonar
-    finally:
-      - call: hygieiaPublish
   Build--Docker-Image:
     try:
       - dir(sourcecode):
           - call: readpom
           - call: build_push_latest_img_dev
-    finally:
-      - call: hygieiaPublish
-  Build-Release:
-    try:
-      - dir(sourcecode):
-          - call: readpom
-          - mvn -U versions:display-property-updates versions:update-properties versions:commit -Dmessage='updating the dependencies' scm:checkin
-          - mvn --batch-mode -Darguments='-Dcodecoveragelimit=0.70' release:prepare release:perform -DscmCommentPrefix='INTARS ' -Dcodecoveragelimit=0.70 -Dgoals=jacoco:prepare-agent,deploy
-          - call: runsonar
-          - call: build_push_latest_img_release
     finally:
       - call: hygieiaPublish
   runsonar:
