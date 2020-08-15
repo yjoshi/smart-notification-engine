@@ -21,5 +21,7 @@ public class UserMappingWithSne {
     private String groupName;
     private String cloudSvc;
     private String slackURL;
+    private String appInsightId;
+    private String appInsightKey;
 
 }

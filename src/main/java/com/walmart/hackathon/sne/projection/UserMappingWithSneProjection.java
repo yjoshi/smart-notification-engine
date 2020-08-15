@@ -14,5 +14,7 @@ public interface UserMappingWithSneProjection {
     public String getUserId();
     public String getZoomEndpoint();
     public String getZoomVerificationToken();
+    public String getAppInsightId();
+    public  String getAppInsightKey();
 
 }
