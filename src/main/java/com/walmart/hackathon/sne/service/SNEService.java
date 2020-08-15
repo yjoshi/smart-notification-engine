@@ -87,14 +87,14 @@ public class SNEService {
 
 
     public void sendNotification(String cosmosName, String alertName, int newTH) {
-        String message = "Got alert for cosmos : " + cosmosName + " and alert name : " + alertName + "with new RU : " + newTH;
+        String message = "Got alert for cosmos : " + cosmosName + " and alert name : " + alertName + " with new RU : " + newTH;
         List<UserMappingWithSneEntity> userMappingWithSneEntityList = userMappingWithSneRepository.getUserDetailsForCosmos(cosmosName);
         for (UserMappingWithSneEntity userMappingWithSneEntity : userMappingWithSneEntityList) {
-            message = "Dear " + userMappingWithSneEntity.getUserId() + " :  \n " + message;
+            String NotificationMessage = "Dear " + userMappingWithSneEntity.getUserId() + " :  \n " + message;
             if (userMappingWithSneEntity.getZoomEndpoint() != null)
-            zoomService.pushToZoomWithMessage(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken(),message);
+            zoomService.pushToZoomWithMessage(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken(),NotificationMessage);
             if (userMappingWithSneEntity.getSlackURL() != null) {
-                zoomService.postToSlackWithMessage(userMappingWithSneEntity.getSlackURL(), message);
+                zoomService.postToSlackWithMessage(userMappingWithSneEntity.getSlackURL(), NotificationMessage);
             }
         }
     }
