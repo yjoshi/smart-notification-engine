@@ -1,20 +1,25 @@
 package com.walmart.hackathon.sne.service;
 
-import com.fasterxml.jackson.databind.*;
-import com.walmart.hackathon.sne.entity.*;
-import com.walmart.hackathon.sne.model.*;
-import com.walmart.hackathon.sne.projection.*;
-import com.walmart.hackathon.sne.repository.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.stereotype.*;
+import com.walmart.hackathon.sne.entity.UserMappingWithSneEntity;
+import com.walmart.hackathon.sne.model.SNEResponse;
+import com.walmart.hackathon.sne.model.UserMappingWithSne;
+import com.walmart.hackathon.sne.projection.UserMappingWithSneProjection;
+import com.walmart.hackathon.sne.repository.CosmosRepository;
+import com.walmart.hackathon.sne.repository.UserMappingWithSneRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class SNEService {
 
     @Autowired
     UserMappingWithSneRepository userMappingWithSneRepository;
+
+    @Autowired
+    private CosmosRepository cosmosRepository;
 
     @Autowired
     private ZoomService zoomService;
@@ -32,6 +37,7 @@ public class SNEService {
         entity.setUserId(registrationRequest.getUserId());
         entity.setZoomEndpoint(registrationRequest.getZoomEndpoint());
         entity.setZoomVerificationToken(registrationRequest.getZoomVerificationToken());
+        entity.setSlackURL(registrationRequest.getSlackURL());
         userMappingWithSneRepository.save(entity);
 
         return true;
@@ -43,11 +49,11 @@ public class SNEService {
         // TO-DO
         UserMappingWithSneProjection userMappingByUserId = userMappingWithSneRepository.getUserMappingByUserId(userId);
         System.out.println(userMappingByUserId.getUserId() + " " + userMappingByUserId.getAccount() + " " + userMappingByUserId.getSubscription());
-
         // Call Azure Function to get details of RU
+        int ru = cosmosRepository.getRU();
         SNEResponse sneResponse = new SNEResponse();
-        sneResponse.setData("<RU from Azure>");
-        sneResponse.setType("RU");
+        sneResponse.setType("RU for Cosmos DB : " + userMappingByUserId.getCosmosDbName());
+        sneResponse.setData("provisioned RU : " + ru);
         return sneResponse;
     }
 
@@ -70,7 +76,26 @@ public class SNEService {
     }
 
     public void callZoomService(String userId) {
-        UserMappingWithSneProjection userMappingByUserId = userMappingWithSneRepository.getUserMappingByUserId(userId);
-        zoomService.postToZoom(userMappingByUserId.getZoomEndpoint(), userMappingByUserId.getZoomVerificationToken(), new HashMap<>());
+//        UserMappingWithSneProjection userMappingByUserId = userMappingWithSneRepository.getUserMappingByUserId(userId);
+//        zoomService.postToZoom(userMappingByUserId.getZoomEndpoint(), userMappingByUserId.getZoomVerificationToken(), new HashMap<>());
+
+        UserMappingWithSneEntity userMappingWithSneEntity = userMappingWithSneRepository.getUserDetails(userId);
+        zoomService.pushToZoom_2(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken());
+        zoomService.postToSlack(userMappingWithSneEntity.getSlackURL());
+//        zoomService.postToSlack_2();
+    }
+
+
+    public void sendNotification(String cosmosName, String alertName, int newTH) {
+        String message = "Got alert for cosmos : " + cosmosName + " and alert name : " + alertName + "with new RU : " + newTH;
+        List<UserMappingWithSneEntity> userMappingWithSneEntityList = userMappingWithSneRepository.getUserDetailsForCosmos(cosmosName);
+        for (UserMappingWithSneEntity userMappingWithSneEntity : userMappingWithSneEntityList) {
+            message = "Dear " + userMappingWithSneEntity.getUserId() + " :  \n " + message;
+            if (userMappingWithSneEntity.getZoomEndpoint() != null)
+            zoomService.pushToZoomWithMessage(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken(),message);
+            if (userMappingWithSneEntity.getSlackURL() != null) {
+                zoomService.postToSlackWithMessage(userMappingWithSneEntity.getSlackURL(), message);
+            }
+        }
     }
 }

@@ -57,6 +57,11 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-cosmos</artifactId>
+			<version>4.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

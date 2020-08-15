@@ -1,15 +1,17 @@
 package com.walmart.hackathon.sne.controller;
 
-import com.azure.core.annotation.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.walmart.hackathon.sne.entity.*;
-import com.walmart.hackathon.sne.model.*;
-import com.walmart.hackathon.sne.service.*;
-import com.walmart.hackathon.sne.util.*;
-import org.springframework.beans.factory.annotation.*;
+import com.azure.core.annotation.QueryParam;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.hackathon.sne.model.SNEResponse;
+import com.walmart.hackathon.sne.model.UserMappingWithSne;
+import com.walmart.hackathon.sne.service.SNEService;
+import com.walmart.hackathon.sne.util.ApplicationConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/v1/sne")
@@ -60,9 +62,26 @@ public class SNEController {
         return sneResponse;
     }
 
-    @PostMapping("/notify")
-    public void notify (Object node) {
-        System.out.println(node);
-        sneService.callZoomService("asd");
+    @GetMapping("/notify/{userId}")
+    public void notify (@PathVariable String userId) {
+        System.out.println(userId);
+        sneService.callZoomService(userId);
+    }
+
+    @PostMapping("/alert")
+    public void alert(@RequestBody String payload) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = null;
+        try {
+            node = mapper.readTree(payload);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return;
+        }
+        String alertName = node.get("data").get("context").get("name").asText();
+        String cosmosName = node.get("data").get("context").get("resourceName").asText();
+        int newTH = node.get("data").get("context").get("condition").get("allOf").get(0).get("metricValue").asInt();
+        System.out.println(newTH);
+        sneService.sendNotification(cosmosName,alertName,newTH);
     }
 }

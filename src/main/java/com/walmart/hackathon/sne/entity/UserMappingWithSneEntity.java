@@ -23,6 +23,7 @@ public class UserMappingWithSneEntity {
     private String subscription;
     private String groupName;
     private String cloudSvc;
+    private String slackURL;
 
     public UserMappingWithSneEntity(){
 

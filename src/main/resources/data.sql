@@ -11,5 +11,6 @@ CREATE TABLE UserMappingWithSne (
     appInsightName VARCHAR(250) NOT NULL,
     subscription VARCHAR(250) NOT NULL,
     groupName VARCHAR(250) NOT NULL,
-    cloudSvc VARCHAR(250) NOT NULL
+    cloudSvc VARCHAR(250) NOT NULL,
+    slackURL VARCHAR(250) NOT NULL
 )

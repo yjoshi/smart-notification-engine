@@ -20,5 +20,6 @@ public class UserMappingWithSne {
     private String subscription;
     private String groupName;
     private String cloudSvc;
+    private String slackURL;
 
 }
