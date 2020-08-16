@@ -2,24 +2,25 @@ package com.walmart.hackathon.sne.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.hackathon.sne.model.SlackMessage;
-import org.apache.http.*;
+import com.walmart.hackathon.sne.repository.CosmosRepository;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.boot.web.client.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.*;
-import org.springframework.web.client.*;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
 
 @Service
 public class ZoomService {
+
+    @Autowired
+    private CosmosRepository cosmosRepository;
 
     private final RestTemplate restTemplate;
 
@@ -44,7 +45,7 @@ public class ZoomService {
 
     }
 
-    public void pushToZoom_2(String zoomUrl, String zoomToken) {
+    public void pushToZoom_2(String zoomUrl, String zoomToken,String message) {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(zoomUrl);
 //        SlackMessage slackMessage2 = SlackMessage.builder()
@@ -54,12 +55,8 @@ public class ZoomService {
         try {
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            String json = objectMapper.writeValueAsString(slackMessage2);
-            String cloudCostDetails = new CloudCostAnalyzerService().getCloudCostDetails();
-            String ruDetails = "";
-            String messagePushForZoom = "This is Smart Notification:\n\tCloud Cost Deatils:\n\t\t"+cloudCostDetails+
-                    "\n\tCosmos RU Details:\n\t\t"+ruDetails;
 
-            StringEntity entity = new StringEntity(messagePushForZoom);
+            StringEntity entity = new StringEntity(message);
             httpPost.setEntity(entity);
 //            httpPost.setHeader("Accept", "application/json");
 //            httpPost.setHeader("Content-type", "application/json");

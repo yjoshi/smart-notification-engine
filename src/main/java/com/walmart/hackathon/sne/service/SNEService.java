@@ -129,11 +129,20 @@ public class SNEService {
 //        zoomService.postToZoom(userMappingByUserId.getZoomEndpoint(), userMappingByUserId.getZoomVerificationToken(), new HashMap<>());
 
         UserMappingWithSneEntity userMappingWithSneEntity = userMappingWithSneRepository.getUserDetails(userId);
-        if (userMappingWithSneEntity.getZoomEndpoint() != null)
-        zoomService.pushToZoom_2(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken());
-        if (userMappingWithSneEntity.getSlackURL() != null)
-        zoomService.postToSlack(userMappingWithSneEntity.getSlackURL());
-//        zoomService.postToSlack_2();
+        String cloudCostDetails = null;
+        try {
+            cloudCostDetails = new CloudCostAnalyzerService().getCloudCostDetails();
+            String ruDetails = String.valueOf(cosmosRepository.getRU());
+            String messagePushForZoom = "Dear " + userMappingWithSneEntity.getUserId() + " : \n This is Smart Notification:\n\tCloud Cost Deatils:\n\t\t"+cloudCostDetails+
+                    "\n\tCosmos RU Details:\n\t\t"+ruDetails;
+            if (userMappingWithSneEntity.getZoomEndpoint() != null)
+                zoomService.pushToZoom_2(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken(),messagePushForZoom);
+            if (userMappingWithSneEntity.getSlackURL() != null)
+                zoomService.postToSlackWithMessage(userMappingWithSneEntity.getSlackURL(),messagePushForZoom);
+//          zoomService.postToSlack_2();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
