@@ -129,6 +129,7 @@ public class SNEService {
         List<UserMappingWithSneProjection> users = userMappingWithSneRepository.getAllUsers();
         if(users != null && users.size() != 0) {
             users.forEach(user -> {
+                UserMappingWithSneEntity userMappingWithSneEntity = userMappingWithSneRepository.getUserDetails(user.getUserId());
                 String cloudCostDetails = null;
                 try {
                     cloudCostDetails = new CloudCostAnalyzerService().getCloudCostDetails();
@@ -137,6 +138,9 @@ public class SNEService {
                             "\n\tCosmos RU Details:\n\t\t"+ruDetails;
                     if (user.getZoomEndpoint() != null)
                         zoomService.pushToZoom_2(user.getZoomEndpoint(), user.getZoomVerificationToken(),messagePushForZoom);
+                    if (userMappingWithSneEntity.getSlackURL() != null)
+                        zoomService.postToSlackWithMessage(userMappingWithSneEntity.getSlackURL(),messagePushForZoom);
+                        zoomService.postToSlack_2(userMappingWithSneEntity.getSlackURL());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
