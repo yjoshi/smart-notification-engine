@@ -129,7 +129,9 @@ public class SNEService {
 //        zoomService.postToZoom(userMappingByUserId.getZoomEndpoint(), userMappingByUserId.getZoomVerificationToken(), new HashMap<>());
 
         UserMappingWithSneEntity userMappingWithSneEntity = userMappingWithSneRepository.getUserDetails(userId);
+        if (userMappingWithSneEntity.getZoomEndpoint() != null)
         zoomService.pushToZoom_2(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken());
+        if (userMappingWithSneEntity.getSlackURL() != null)
         zoomService.postToSlack(userMappingWithSneEntity.getSlackURL());
 //        zoomService.postToSlack_2();
     }

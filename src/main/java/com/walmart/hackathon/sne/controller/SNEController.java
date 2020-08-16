@@ -53,7 +53,7 @@ public class SNEController {
         // Zoom endpoint
         // Zoom verification token
         if(sneService.registerMonitor(registrationRequest)) {
-            return "Registered successfully";
+            return "Registration on monitoring done successfully";
         } else {
             return "Failed to register";
         }
