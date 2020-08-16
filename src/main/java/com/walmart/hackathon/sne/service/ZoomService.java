@@ -54,14 +54,19 @@ public class ZoomService {
         try {
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            String json = objectMapper.writeValueAsString(slackMessage2);
-            StringEntity entity = new StringEntity("test message");
+            String cloudCostDetails = new CloudCostAnalyzerService().getCloudCostDetails();
+            String ruDetails = "";
+            String messagePushForZoom = "This is Smart Notification:\n\tCloud Cost Deatils:\n\t\t"+cloudCostDetails+
+                    "\n\tCosmos RU Details:\n\t\t"+ruDetails;
+
+            StringEntity entity = new StringEntity(messagePushForZoom);
             httpPost.setEntity(entity);
 //            httpPost.setHeader("Accept", "application/json");
 //            httpPost.setHeader("Content-type", "application/json");
             httpPost.setHeader("Authorization", zoomToken);
             client.execute(httpPost);
             client.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
