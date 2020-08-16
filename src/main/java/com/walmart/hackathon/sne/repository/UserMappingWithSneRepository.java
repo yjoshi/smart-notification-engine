@@ -22,4 +22,9 @@ public interface UserMappingWithSneRepository extends JpaRepository<UserMappingW
 
     @Query("select user from UserMappingWithSneEntity user where user.cosmosDbName = ?1")
     List<UserMappingWithSneEntity> getUserDetailsForCosmos(String cosmosName);
+
+    @Query(value="SELECT ACCOUNT AS account, APP_INSIGHT_NAME AS appInsightName, CLOUD_SVC AS cloudSvc, COSMOS_DB_NAME AS cosmosDbName," +
+            " FUNCTION AS function, SUBSCRIPTION as subscription, USER_ID AS userId, ZOOM_ENDPOINT AS zoomEndpoint, ZOOM_VERIFICATION_TOKEN AS zoomVerificationToken" +
+            " FROM USER_MAPPING_WITH_SNE_ENTITY", nativeQuery = true)
+    List<UserMappingWithSneProjection> getAllUsers();
 }

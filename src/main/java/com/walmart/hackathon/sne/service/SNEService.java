@@ -13,13 +13,13 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.*;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SNEService {
@@ -124,10 +124,30 @@ public class SNEService {
         return null;
     }
 
-    public void callZoomService(String userId) {
-//        UserMappingWithSneProjection userMappingByUserId = userMappingWithSneRepository.getUserMappingByUserId(userId);
-//        zoomService.postToZoom(userMappingByUserId.getZoomEndpoint(), userMappingByUserId.getZoomVerificationToken(), new HashMap<>());
+    @Scheduled(cron="${zoom.scheduled.time}")
+    public void scheduleZoomNotifications() {
+        List<UserMappingWithSneProjection> users = userMappingWithSneRepository.getAllUsers();
+        if(users != null && users.size() != 0) {
+            users.forEach(user -> {
+                String cloudCostDetails = null;
+                try {
+                    cloudCostDetails = new CloudCostAnalyzerService().getCloudCostDetails();
+                    String ruDetails = String.valueOf(cosmosRepository.getRU());
+                    String messagePushForZoom = "Dear " + user.getUserId() + " : \n This is Smart Notification:\n\tCloud Cost Deatils:\n\t\t"+cloudCostDetails+
+                            "\n\tCosmos RU Details:\n\t\t"+ruDetails;
+                    if (user.getZoomEndpoint() != null)
+                        zoomService.pushToZoom_2(user.getZoomEndpoint(), user.getZoomVerificationToken(),messagePushForZoom);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
+        }
+    }
+
+    public void callZoomService(String userId) {
+        UserMappingWithSneProjection userMappingByUserId = userMappingWithSneRepository.getUserMappingByUserId(userId);
+        zoomService.postToZoom(userMappingByUserId.getZoomEndpoint(), userMappingByUserId.getZoomVerificationToken(), new HashMap<>());
         UserMappingWithSneEntity userMappingWithSneEntity = userMappingWithSneRepository.getUserDetails(userId);
         String cloudCostDetails = null;
         try {
@@ -139,7 +159,7 @@ public class SNEService {
                 zoomService.pushToZoom_2(userMappingWithSneEntity.getZoomEndpoint(), userMappingWithSneEntity.getZoomVerificationToken(),messagePushForZoom);
             if (userMappingWithSneEntity.getSlackURL() != null)
                 zoomService.postToSlackWithMessage(userMappingWithSneEntity.getSlackURL(),messagePushForZoom);
-//          zoomService.postToSlack_2();
+                zoomService.postToSlack_2(userMappingWithSneEntity.getSlackURL());
         } catch (Exception e) {
             e.printStackTrace();
         }
